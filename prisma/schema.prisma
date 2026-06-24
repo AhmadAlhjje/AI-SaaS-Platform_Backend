@@ -1,0 +1,376 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =======================
+// ENUMS
+// =======================
+
+enum CompanyStatus {
+  active
+  suspended
+}
+
+enum DocumentStatus {
+  processing
+  ready
+  failed
+}
+
+enum SubscriptionStatus {
+  active
+  expired
+  cancelled
+}
+
+enum SenderType {
+  user
+  ai
+}
+
+// =======================
+// USERS
+// =======================
+
+model User {
+  id           String @id @default(uuid()) @db.Uuid
+  name         String
+  email        String @unique
+  passwordHash String @map("password_hash")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  company Company?
+
+  @@map("users")
+}
+
+// =======================
+// COMPANY
+// =======================
+
+model Company {
+  id String @id @default(uuid()) @db.Uuid
+
+  userId String @unique @map("user_id") @db.Uuid
+
+  name String
+
+  logo String?
+
+  status CompanyStatus @default(active)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  aiConfiguration AiConfiguration?
+
+  apiKeys ApiKey[]
+
+  documents Document[]
+
+  dataTables DataTable[]
+
+  documentChunks DocumentChunk[]
+
+  conversations Conversation[]
+
+  subscriptions Subscription[]
+  messages      Message[]
+
+  @@index([status])
+  @@map("companies")
+}
+
+// =======================
+// AI CONFIG
+// =======================
+
+model AiConfiguration {
+  id String @id @default(uuid()) @db.Uuid
+
+  companyId String @unique @map("company_id") @db.Uuid
+
+  systemPrompt String? @map("system_prompt")
+
+  model String
+
+  temperature Float @default(0.7)
+
+  maxTokens Int @default(1000) @map("max_tokens")
+
+  ragTopK Int @default(5) @map("rag_top_k")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("ai_configurations")
+}
+
+// =======================
+// API KEYS
+// =======================
+
+model ApiKey {
+  id String @id @default(uuid()) @db.Uuid
+
+  companyId String @map("company_id") @db.Uuid
+
+  name String
+
+  keyHash String @unique @map("key_hash")
+
+  lastUsedAt DateTime? @map("last_used_at")
+
+  revokedAt DateTime? @map("revoked_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@map("api_keys")
+}
+
+// =======================
+// DOCUMENTS
+// =======================
+
+model Document {
+  id String @id @default(uuid()) @db.Uuid
+
+  companyId String @map("company_id") @db.Uuid
+
+  fileName String @map("file_name")
+
+  fileType String @map("file_type")
+
+  fileUrl String @map("file_url")
+
+  knowledgeType String @map("knowledge_type")
+
+  status DocumentStatus @default(processing)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  deletedAt DateTime? @map("deleted_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  documentChunks DocumentChunk[]
+
+  dataTables DataTable[]
+
+  @@index([companyId])
+  @@index([companyId, status])
+  @@map("documents")
+}
+
+// =======================
+// DOCUMENT CHUNKS
+// =======================
+
+model DocumentChunk {
+  id String @id @default(uuid()) @db.Uuid
+
+  documentId String @map("document_id") @db.Uuid
+
+  companyId String @map("company_id") @db.Uuid
+
+  chunkIndex Int @map("chunk_index")
+
+  content String
+
+  qdrantPointId String @unique @map("qdrant_point_id")
+
+  chunkHash String @map("chunk_hash")
+
+  embeddingModel String? @map("embedding_model")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, chunkIndex])
+  @@index([companyId, createdAt])
+  @@index([documentId])
+  @@index([chunkHash])
+  @@map("document_chunks")
+}
+
+// =======================
+// DATA TABLES
+// =======================
+
+model DataTable {
+  id String @id @default(uuid()) @db.Uuid
+
+  companyId String @map("company_id") @db.Uuid
+
+  documentId String @map("document_id") @db.Uuid
+
+  tableName String @map("table_name")
+
+  schemaJson Json @map("schema_json")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  rows DataTableRow[]
+
+  @@index([companyId])
+  @@index([documentId])
+  @@map("data_tables")
+}
+
+// =======================
+// DATA TABLE ROWS
+// =======================
+
+model DataTableRow {
+  id String @id @default(uuid()) @db.Uuid
+
+  dataTableId String @map("data_table_id") @db.Uuid
+
+  rowIndex Int @map("row_index")
+
+  rowData Json @map("row_data")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  dataTable DataTable @relation(fields: [dataTableId], references: [id], onDelete: Cascade)
+
+  @@unique([dataTableId, rowIndex])
+  @@index([dataTableId])
+  @@map("data_table_rows")
+}
+
+// =======================
+// CONVERSATIONS
+// =======================
+
+model Conversation {
+  id String @id @default(uuid()) @db.Uuid
+
+  companyId String @map("company_id") @db.Uuid
+
+  title String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  @@index([companyId, createdAt])
+  @@map("conversations")
+}
+
+// =======================
+// MESSAGES
+// =======================
+
+model Message {
+  id String @id @default(uuid()) @db.Uuid
+
+  companyId String @map("company_id") @db.Uuid
+
+  conversationId String @map("conversation_id") @db.Uuid
+
+  senderType SenderType @map("sender_type")
+
+  content String
+
+  modelUsed String? @map("model_used")
+
+  promptTokens Int? @map("prompt_tokens")
+
+  completionTokens Int? @map("completion_tokens")
+
+  totalTokens Int? @map("total_tokens")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, createdAt])
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// =======================
+// PLANS
+// =======================
+
+model Plan {
+  id String @id @default(uuid()) @db.Uuid
+
+  name String @unique
+
+  price Decimal @db.Decimal(10, 2)
+
+  limitsJson Json @map("limits_json")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+// =======================
+// SUBSCRIPTIONS
+// =======================
+
+model Subscription {
+  id String @id @default(uuid()) @db.Uuid
+
+  companyId String @map("company_id") @db.Uuid
+
+  planId String @map("plan_id") @db.Uuid
+
+  status SubscriptionStatus @default(active)
+
+  startDate DateTime @map("start_date")
+
+  endDate DateTime? @map("end_date")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Restrict)
+
+  @@index([companyId, status])
+  @@map("subscriptions")
+}
