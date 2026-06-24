@@ -29,7 +29,7 @@ Backend لمنصة AI SaaS Multi-Tenant تسمح للشركات برفع بيا�
 | Cache           | Redis                    |
 | Queue           | BullMQ                   |
 | Vector Database | Qdrant                   |
-| Package Manager | pnpm                     |
+| Package Manager | npm                      |
 
 ---
 
