@@ -32,6 +32,11 @@ enum SenderType {
   ai
 }
 
+enum Theme {
+  light
+  dark
+}
+
 // =======================
 // USERS
 // =======================
@@ -73,6 +78,8 @@ model Company {
   user User @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   aiConfiguration AiConfiguration?
+
+  setting Setting?
 
   apiKeys ApiKey[]
 
@@ -373,4 +380,25 @@ model Subscription {
 
   @@index([companyId, status])
   @@map("subscriptions")
+}
+
+// =======================
+// SETTINGS
+// =======================
+
+model Setting {
+  id String @id @default(uuid()) @db.Uuid
+
+  companyId String @unique @map("company_id") @db.Uuid
+
+  theme Theme @default(light)
+
+  language String @default("en")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@map("settings")
 }
