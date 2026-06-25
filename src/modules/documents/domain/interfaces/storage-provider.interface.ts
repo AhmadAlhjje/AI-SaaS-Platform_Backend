@@ -7,5 +7,6 @@ export interface UploadFileInput {
 export interface StorageProvider {
   /** Stores the file and returns the object key persisted as Document.fileUrl. */
   upload(input: UploadFileInput): Promise<string>;
+  download(key: string): Promise<Buffer>;
   delete(key: string): Promise<void>;
 }

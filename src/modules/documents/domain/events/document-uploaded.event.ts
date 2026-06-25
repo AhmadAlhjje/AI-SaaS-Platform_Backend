@@ -8,5 +8,7 @@ export class DocumentUploadedEvent implements DomainEvent {
   constructor(
     public readonly documentId: string,
     public readonly companyId: string,
+    public readonly fileType: string,
+    public readonly fileUrl: string,
   ) {}
 }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppConfigModule } from './infrastructure/config/config.module';
 import { PrismaModule } from './infrastructure/database/prisma.module';
+import { QueueModule } from './infrastructure/queue/queue.module';
 import { AiConfigurationModule } from './modules/ai-configuration/ai-configuration.module';
 import { AiModule } from './modules/ai/ai.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -18,6 +19,7 @@ import { LoggerModule } from './shared/logger/logger.module';
     PrismaModule,
     LoggerModule,
     EventBusModule,
+    QueueModule,
     AuthModule,
     CompaniesModule,
     DocumentsModule,

@@ -2,8 +2,10 @@ import { UnsupportedFileTypeError } from '../errors/unsupported-file-type.error'
 import { DocumentStatus } from '../value-objects/document-status.value-object';
 
 // PDF / CSV / Excel per ROLE.md §1 — RAG for unstructured PDF, SQL Agent for CSV/Excel.
+export const PDF_FILE_TYPE = 'application/pdf';
+
 const SUPPORTED_FILE_TYPES = new Set<string>([
-  'application/pdf',
+  PDF_FILE_TYPE,
   'text/csv',
   'application/vnd.ms-excel',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -63,6 +65,36 @@ export class DocumentEntity {
       props.knowledgeType,
       props.status,
       props.createdAt,
+    );
+  }
+
+  isPdf(): boolean {
+    return this.fileType === PDF_FILE_TYPE;
+  }
+
+  markReady(): DocumentEntity {
+    return new DocumentEntity(
+      this.id,
+      this.companyId,
+      this.fileName,
+      this.fileType,
+      this.fileUrl,
+      this.knowledgeType,
+      DocumentStatus.READY,
+      this.createdAt,
+    );
+  }
+
+  markFailed(): DocumentEntity {
+    return new DocumentEntity(
+      this.id,
+      this.companyId,
+      this.fileName,
+      this.fileType,
+      this.fileUrl,
+      this.knowledgeType,
+      DocumentStatus.FAILED,
+      this.createdAt,
     );
   }
 }

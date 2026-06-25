@@ -38,6 +38,10 @@ export class PrismaDocumentRepository implements DocumentRepository {
     return this.toDomain(record);
   }
 
+  async updateStatus(id: string, status: DocumentStatus): Promise<void> {
+    await this.prisma.document.update({ where: { id }, data: { status } });
+  }
+
   async softDelete(id: string): Promise<void> {
     await this.prisma.document.update({ where: { id }, data: { deletedAt: new Date() } });
   }
