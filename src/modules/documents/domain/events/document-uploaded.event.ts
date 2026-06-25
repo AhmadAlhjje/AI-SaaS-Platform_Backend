@@ -10,5 +10,6 @@ export class DocumentUploadedEvent implements DomainEvent {
     public readonly companyId: string,
     public readonly fileType: string,
     public readonly fileUrl: string,
+    public readonly fileName: string,
   ) {}
 }

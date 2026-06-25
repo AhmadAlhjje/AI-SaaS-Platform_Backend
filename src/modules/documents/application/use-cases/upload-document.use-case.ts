@@ -39,7 +39,13 @@ export class UploadDocumentUseCase {
 
     this.eventBus.publish(
       DOCUMENT_UPLOADED_EVENT,
-      new DocumentUploadedEvent(createdDocument.id!, createdDocument.companyId, createdDocument.fileType, createdDocument.fileUrl),
+      new DocumentUploadedEvent(
+        createdDocument.id!,
+        createdDocument.companyId,
+        createdDocument.fileType,
+        createdDocument.fileUrl,
+        createdDocument.fileName,
+      ),
     );
 
     return createdDocument;

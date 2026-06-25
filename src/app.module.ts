@@ -8,6 +8,7 @@ import { AiModule } from './modules/ai/ai.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { ConversationsModule } from './modules/conversations/conversations.module';
+import { DataTablesModule } from './modules/data-tables/data-tables.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { EventBusModule } from './shared/events/event-bus.module';
 import { LoggerModule } from './shared/logger/logger.module';
@@ -23,6 +24,7 @@ import { LoggerModule } from './shared/logger/logger.module';
     AuthModule,
     CompaniesModule,
     DocumentsModule,
+    DataTablesModule,
     ConversationsModule,
     AiConfigurationModule,
     AiModule,
