@@ -1,0 +1,7 @@
+import { ConversationEntity } from '../entities/conversation.entity';
+
+export interface ConversationRepository {
+  findById(id: string): Promise<ConversationEntity | null>;
+  findAllByCompanyId(companyId: string): Promise<ConversationEntity[]>;
+  create(conversation: ConversationEntity): Promise<ConversationEntity>;
+}
