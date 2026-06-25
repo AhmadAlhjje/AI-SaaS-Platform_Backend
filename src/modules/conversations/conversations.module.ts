@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AiModule } from '../ai/ai.module';
 import { REPOSITORY_TOKENS } from '../../shared/constants/tokens.constants';
 import { CreateConversationUseCase } from './application/use-cases/create-conversation.use-case';
 import { GetConversationHistoryUseCase } from './application/use-cases/get-conversation-history.use-case';
@@ -9,6 +10,7 @@ import { PrismaMessageRepository } from './infrastructure/repositories/prisma-me
 import { ConversationsController } from './presentation/controllers/conversations.controller';
 
 @Module({
+  imports: [AiModule],
   controllers: [ConversationsController],
   providers: [
     CreateConversationUseCase,

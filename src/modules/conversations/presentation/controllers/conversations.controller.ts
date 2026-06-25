@@ -11,6 +11,7 @@ import { CreateConversationDto } from '../dto/create-conversation.dto';
 import { SendMessageDto } from '../dto/send-message.dto';
 import { ConversationResponse } from '../responses/conversation.response';
 import { MessageResponse } from '../responses/message.response';
+import { SendMessageResponse } from '../responses/send-message.response';
 
 @Controller('conversations')
 @UseGuards(JwtAuthGuard, CompanyOwnershipGuard)
@@ -44,15 +45,15 @@ export class ConversationsController {
     @CurrentCompany() companyId: string,
     @Param('id') conversationId: string,
     @Body() dto: SendMessageDto,
-  ): Promise<MessageResponse> {
-    const message = await this.sendMessageUseCase.execute({
+  ): Promise<SendMessageResponse> {
+    const { userMessage, aiMessage } = await this.sendMessageUseCase.execute({
       companyId,
       conversationId,
       senderType: SenderType.USER,
       content: dto.content,
     });
 
-    return new MessageResponse(message);
+    return new SendMessageResponse(userMessage, aiMessage);
   }
 
   @Get(':id/messages')
