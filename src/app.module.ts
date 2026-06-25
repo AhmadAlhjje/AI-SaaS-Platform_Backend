@@ -4,6 +4,7 @@ import { AppConfigModule } from './infrastructure/config/config.module';
 import { PrismaModule } from './infrastructure/database/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CompaniesModule } from './modules/companies/companies.module';
+import { DocumentsModule } from './modules/documents/documents.module';
 import { EventBusModule } from './shared/events/event-bus.module';
 import { LoggerModule } from './shared/logger/logger.module';
 
@@ -16,6 +17,7 @@ import { LoggerModule } from './shared/logger/logger.module';
     EventBusModule,
     AuthModule,
     CompaniesModule,
+    DocumentsModule,
   ],
 })
 export class AppModule {}
