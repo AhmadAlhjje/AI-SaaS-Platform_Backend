@@ -15,9 +15,9 @@ async function bootstrap(): Promise<void> {
   app.useLogger(logger);
 
   app.useGlobalPipes(new AppValidationPipe());
-  // Order matters: DomainErrorFilter must be registered before the catch-all
-  // HttpExceptionFilter so DomainError instances are handled by the specific one.
-  app.useGlobalFilters(new DomainErrorFilter(logger), new HttpExceptionFilter(logger));
+  // Nest internally reverses this array before matching, so the catch-all
+  // must be passed first for the more specific DomainErrorFilter to win.
+  app.useGlobalFilters(new HttpExceptionFilter(logger), new DomainErrorFilter(logger));
   app.useGlobalInterceptors(new LoggingInterceptor(logger), new ResponseInterceptor());
 
   const port = process.env.PORT ?? 3000;

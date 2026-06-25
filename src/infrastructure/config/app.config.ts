@@ -5,6 +5,8 @@ export interface AppConfig {
   readonly databaseUrl: string;
   readonly jwtSecret: string;
   readonly jwtExpiresIn: string;
+  readonly jwtRefreshSecret: string;
+  readonly jwtRefreshExpiresIn: string;
 }
 
 export default registerAs(
@@ -14,5 +16,7 @@ export default registerAs(
     databaseUrl: process.env.DATABASE_URL!,
     jwtSecret: process.env.JWT_SECRET!,
     jwtExpiresIn: process.env.JWT_EXPIRES_IN!,
+    jwtRefreshSecret: process.env.JWT_REFRESH_SECRET!,
+    jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN!,
   }),
 );
