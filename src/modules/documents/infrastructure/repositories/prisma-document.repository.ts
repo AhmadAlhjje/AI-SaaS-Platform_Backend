@@ -23,6 +23,16 @@ export class PrismaDocumentRepository implements DocumentRepository {
     return records.map((record) => this.toDomain(record));
   }
 
+  async countByCompanyId(companyId: string): Promise<number> {
+    return this.prisma.document.count({ where: { companyId, deletedAt: null } });
+  }
+
+  async countByCompanyIdExcludingFileType(companyId: string, excludedFileType: string): Promise<number> {
+    return this.prisma.document.count({
+      where: { companyId, deletedAt: null, fileType: { not: excludedFileType } },
+    });
+  }
+
   async create(document: DocumentEntity): Promise<DocumentEntity> {
     const record = await this.prisma.document.create({
       data: {

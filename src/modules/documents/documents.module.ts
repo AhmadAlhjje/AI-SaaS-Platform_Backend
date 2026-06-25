@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { AiModule } from '../ai/ai.module';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 import { QUEUE_NAMES } from '../../shared/constants/queue.constants';
 import { PROVIDER_TOKENS, REPOSITORY_TOKENS } from '../../shared/constants/tokens.constants';
 import { EnqueueDocumentProcessingHandler } from './application/event-handlers/enqueue-document-processing.handler';
@@ -22,6 +23,7 @@ import { DocumentsController } from './presentation/controllers/documents.contro
 @Module({
   imports: [
     AiModule,
+    SubscriptionsModule,
     BullModule.registerQueue(
       { name: QUEUE_NAMES.PARSE_PDF },
       { name: QUEUE_NAMES.GENERATE_CHUNKS },
