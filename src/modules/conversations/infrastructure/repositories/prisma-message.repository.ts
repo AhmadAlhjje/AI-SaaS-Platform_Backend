@@ -34,6 +34,10 @@ export class PrismaMessageRepository implements MessageRepository {
     return this.toDomain(record);
   }
 
+  async deleteById(id: string): Promise<void> {
+    await this.prisma.message.delete({ where: { id } });
+  }
+
   private toDomain(record: Message): MessageEntity {
     return MessageEntity.reconstitute({
       id: record.id,

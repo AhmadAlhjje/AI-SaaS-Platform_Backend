@@ -1,10 +1,12 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { CurrentCompany } from '../../../../shared/decorators/current-company.decorator';
 import { CompanyOwnershipGuard } from '../../../../shared/guards/company-ownership.guard';
 import { JwtAuthGuard } from '../../../../shared/guards/jwt-auth.guard';
 import { CreateConversationUseCase } from '../../application/use-cases/create-conversation.use-case';
+import { DeleteConversationUseCase } from '../../application/use-cases/delete-conversation.use-case';
 import { GetConversationHistoryUseCase } from '../../application/use-cases/get-conversation-history.use-case';
 import { ListConversationsUseCase } from '../../application/use-cases/list-conversations.use-case';
+import { RegenerateLastResponseUseCase } from '../../application/use-cases/regenerate-last-response.use-case';
 import { SendMessageUseCase } from '../../application/use-cases/send-message.use-case';
 import { SenderType } from '../../domain/entities/message.entity';
 import { CreateConversationDto } from '../dto/create-conversation.dto';
@@ -21,6 +23,8 @@ export class ConversationsController {
     private readonly listConversationsUseCase: ListConversationsUseCase,
     private readonly sendMessageUseCase: SendMessageUseCase,
     private readonly getConversationHistoryUseCase: GetConversationHistoryUseCase,
+    private readonly deleteConversationUseCase: DeleteConversationUseCase,
+    private readonly regenerateLastResponseUseCase: RegenerateLastResponseUseCase,
   ) {}
 
   @Post()
@@ -63,5 +67,20 @@ export class ConversationsController {
   ): Promise<MessageResponse[]> {
     const messages = await this.getConversationHistoryUseCase.execute({ companyId, conversationId });
     return messages.map((message) => new MessageResponse(message));
+  }
+
+  @Post(':id/messages/regenerate')
+  async regenerate(
+    @CurrentCompany() companyId: string,
+    @Param('id') conversationId: string,
+  ): Promise<MessageResponse> {
+    const aiMessage = await this.regenerateLastResponseUseCase.execute({ companyId, conversationId });
+    return new MessageResponse(aiMessage);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(@CurrentCompany() companyId: string, @Param('id') conversationId: string): Promise<void> {
+    await this.deleteConversationUseCase.execute({ conversationId, companyId });
   }
 }

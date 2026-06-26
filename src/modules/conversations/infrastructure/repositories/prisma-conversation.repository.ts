@@ -33,6 +33,10 @@ export class PrismaConversationRepository implements ConversationRepository {
     return this.toDomain(record);
   }
 
+  async delete(id: string): Promise<void> {
+    await this.prisma.conversation.delete({ where: { id } });
+  }
+
   private toDomain(record: Conversation): ConversationEntity {
     return ConversationEntity.reconstitute({
       id: record.id,
