@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { S3StorageProvider } from '../../infrastructure/storage/s3-storage.provider';
 import { PROVIDER_TOKENS, REPOSITORY_TOKENS } from '../../shared/constants/tokens.constants';
 import { CreateApiKeyUseCase } from './application/use-cases/create-api-key.use-case';
 import { CreateCompanyUseCase } from './application/use-cases/create-company.use-case';
@@ -7,6 +8,7 @@ import { ListApiKeysUseCase } from './application/use-cases/list-api-keys.use-ca
 import { RevokeApiKeyUseCase } from './application/use-cases/revoke-api-key.use-case';
 import { SuspendCompanyUseCase } from './application/use-cases/suspend-company.use-case';
 import { UpdateCompanyUseCase } from './application/use-cases/update-company.use-case';
+import { UploadCompanyLogoUseCase } from './application/use-cases/upload-company-logo.use-case';
 import { ApiKeyHasherProvider } from './infrastructure/providers/api-key-hasher.provider';
 import { PrismaApiKeyRepository } from './infrastructure/repositories/prisma-api-key.repository';
 import { PrismaCompanyRepository } from './infrastructure/repositories/prisma-company.repository';
@@ -19,6 +21,7 @@ import { CompaniesController } from './presentation/controllers/companies.contro
     CreateCompanyUseCase,
     GetCompanyProfileUseCase,
     UpdateCompanyUseCase,
+    UploadCompanyLogoUseCase,
     SuspendCompanyUseCase,
     CreateApiKeyUseCase,
     ListApiKeysUseCase,
@@ -26,6 +29,7 @@ import { CompaniesController } from './presentation/controllers/companies.contro
     { provide: REPOSITORY_TOKENS.COMPANY_REPOSITORY, useClass: PrismaCompanyRepository },
     { provide: REPOSITORY_TOKENS.API_KEY_REPOSITORY, useClass: PrismaApiKeyRepository },
     { provide: PROVIDER_TOKENS.API_KEY_HASHER, useClass: ApiKeyHasherProvider },
+    { provide: PROVIDER_TOKENS.STORAGE_PROVIDER, useClass: S3StorageProvider },
   ],
 })
 export class CompaniesModule {}

@@ -16,7 +16,7 @@ import { GenerateEmbeddingsJob } from './infrastructure/jobs/generate-embeddings
 import { IndexToQdrantJob } from './infrastructure/jobs/index-to-qdrant.job';
 import { ParsePdfJob } from './infrastructure/jobs/parse-pdf.job';
 import { QdrantIndexerProvider } from './infrastructure/providers/qdrant-indexer.provider';
-import { S3StorageProvider } from './infrastructure/providers/s3-storage.provider';
+import { S3StorageProvider } from '../../infrastructure/storage/s3-storage.provider';
 import { PrismaDocumentChunkRepository } from './infrastructure/repositories/prisma-document-chunk.repository';
 import { PrismaDocumentRepository } from './infrastructure/repositories/prisma-document.repository';
 import { DocumentsController } from './presentation/controllers/documents.controller';

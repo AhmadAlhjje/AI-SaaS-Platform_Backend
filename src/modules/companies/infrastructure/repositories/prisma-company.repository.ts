@@ -37,6 +37,10 @@ export class PrismaCompanyRepository implements CompanyRepository {
       data: {
         name: company.name,
         logo: company.logo,
+        contactEmail: company.contactEmail,
+        contactPhone: company.contactPhone,
+        address: company.address,
+        website: company.website,
         status: company.status,
       },
     });
@@ -50,6 +54,10 @@ export class PrismaCompanyRepository implements CompanyRepository {
       userId: record.userId,
       name: record.name,
       logo: record.logo,
+      contactEmail: record.contactEmail,
+      contactPhone: record.contactPhone,
+      address: record.address,
+      website: record.website,
       status: record.status as CompanyStatus,
       createdAt: record.createdAt,
     });

@@ -5,7 +5,7 @@ import { EventBus } from '../../../../shared/events/event-bus';
 import { CheckUsageLimitsUseCase } from '../../../subscriptions/application/use-cases/check-usage-limits.use-case';
 import { DocumentEntity, PDF_FILE_TYPE } from '../../domain/entities/document.entity';
 import { DOCUMENT_UPLOADED_EVENT, DocumentUploadedEvent } from '../../domain/events/document-uploaded.event';
-import { StorageProvider } from '../../domain/interfaces/storage-provider.interface';
+import { StorageProvider } from '../../../../shared/interfaces/storage-provider.interface';
 import { DocumentRepository } from '../../domain/repositories/document.repository';
 
 export interface UploadDocumentInput {

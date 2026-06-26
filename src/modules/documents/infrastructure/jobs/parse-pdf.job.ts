@@ -4,7 +4,7 @@ import { Job, Queue } from 'bullmq';
 import pdfParse from 'pdf-parse';
 import { PROVIDER_TOKENS } from '../../../../shared/constants/tokens.constants';
 import { QUEUE_NAMES } from '../../../../shared/constants/queue.constants';
-import { StorageProvider } from '../../domain/interfaces/storage-provider.interface';
+import { StorageProvider } from '../../../../shared/interfaces/storage-provider.interface';
 import { DocumentProcessingFailureHandler } from './document-processing-failure.handler';
 import { GenerateChunksJobData, ParsePdfJobData } from './job-data.types';
 

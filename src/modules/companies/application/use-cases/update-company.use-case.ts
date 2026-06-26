@@ -8,6 +8,10 @@ export interface UpdateCompanyInput {
   readonly companyId: string;
   readonly name?: string;
   readonly logo?: string | null;
+  readonly contactEmail?: string | null;
+  readonly contactPhone?: string | null;
+  readonly address?: string | null;
+  readonly website?: string | null;
 }
 
 @Injectable()
@@ -22,7 +26,14 @@ export class UpdateCompanyUseCase {
       throw new CompanyNotFoundError(input.companyId);
     }
 
-    const updatedCompany = company.update({ name: input.name, logo: input.logo });
+    const updatedCompany = company.update({
+      name: input.name,
+      logo: input.logo,
+      contactEmail: input.contactEmail,
+      contactPhone: input.contactPhone,
+      address: input.address,
+      website: input.website,
+    });
     return this.companyRepository.update(updatedCompany);
   }
 }

@@ -69,6 +69,14 @@ model Company {
 
   logo String?
 
+  contactEmail String? @map("contact_email")
+
+  contactPhone String? @map("contact_phone")
+
+  address String?
+
+  website String?
+
   status CompanyStatus @default(active)
 
   createdAt DateTime  @default(now()) @map("created_at")

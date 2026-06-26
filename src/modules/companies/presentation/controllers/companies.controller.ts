@@ -1,4 +1,5 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CurrentCompany } from '../../../../shared/decorators/current-company.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../../shared/decorators/current-user.decorator';
 import { CompanyOwnershipGuard } from '../../../../shared/guards/company-ownership.guard';
@@ -7,6 +8,7 @@ import { CreateCompanyUseCase } from '../../application/use-cases/create-company
 import { GetCompanyProfileUseCase } from '../../application/use-cases/get-company-profile.use-case';
 import { SuspendCompanyUseCase } from '../../application/use-cases/suspend-company.use-case';
 import { UpdateCompanyUseCase } from '../../application/use-cases/update-company.use-case';
+import { UploadCompanyLogoUseCase } from '../../application/use-cases/upload-company-logo.use-case';
 import { CreateCompanyDto } from '../dto/create-company.dto';
 import { UpdateCompanyDto } from '../dto/update-company.dto';
 import { CompanyResponse } from '../responses/company.response';
@@ -18,6 +20,7 @@ export class CompaniesController {
     private readonly createCompanyUseCase: CreateCompanyUseCase,
     private readonly getCompanyProfileUseCase: GetCompanyProfileUseCase,
     private readonly updateCompanyUseCase: UpdateCompanyUseCase,
+    private readonly uploadCompanyLogoUseCase: UploadCompanyLogoUseCase,
     private readonly suspendCompanyUseCase: SuspendCompanyUseCase,
   ) {}
 
@@ -41,6 +44,23 @@ export class CompaniesController {
     @Body() dto: UpdateCompanyDto,
   ): Promise<CompanyResponse> {
     const company = await this.updateCompanyUseCase.execute({ companyId, ...dto });
+    return new CompanyResponse(company);
+  }
+
+  @Post('me/logo')
+  @UseGuards(CompanyOwnershipGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadMyLogo(
+    @CurrentCompany() companyId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<CompanyResponse> {
+    const company = await this.uploadCompanyLogoUseCase.execute({
+      companyId,
+      fileName: file.originalname,
+      fileType: file.mimetype,
+      buffer: file.buffer,
+    });
+
     return new CompanyResponse(company);
   }
 

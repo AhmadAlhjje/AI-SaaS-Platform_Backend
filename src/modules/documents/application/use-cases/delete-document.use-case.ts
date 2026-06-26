@@ -3,8 +3,8 @@ import { PROVIDER_TOKENS, REPOSITORY_TOKENS } from '../../../../shared/constants
 import { EventBus } from '../../../../shared/events/event-bus';
 import { DocumentNotFoundError } from '../../domain/errors/document-not-found.error';
 import { DOCUMENT_DELETED_EVENT, DocumentDeletedEvent } from '../../domain/events/document-deleted.event';
-import { StorageProvider } from '../../domain/interfaces/storage-provider.interface';
 import { VectorIndexer } from '../../domain/interfaces/vector-indexer.interface';
+import { StorageProvider } from '../../../../shared/interfaces/storage-provider.interface';
 import { DocumentChunkRepository } from '../../domain/repositories/document-chunk.repository';
 import { DocumentRepository } from '../../domain/repositories/document.repository';
 
