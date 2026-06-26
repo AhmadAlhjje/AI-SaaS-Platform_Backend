@@ -1,6 +1,5 @@
 import { IsIn, IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
-
-const SUPPORTED_MODELS = ['gpt-4o-mini', 'gpt-4o', 'claude-haiku-4-5', 'claude-sonnet-4-6', 'deepseek-chat', 'llama3.1:8b'];
+import { SUPPORTED_AI_MODELS } from '../../../../shared/constants/ai-models.constants';
 
 export class UpdateAiConfigurationDto {
   @IsOptional()
@@ -10,7 +9,7 @@ export class UpdateAiConfigurationDto {
 
   @IsOptional()
   @IsString()
-  @IsIn(SUPPORTED_MODELS)
+  @IsIn(SUPPORTED_AI_MODELS)
   model?: string;
 
   @IsOptional()
