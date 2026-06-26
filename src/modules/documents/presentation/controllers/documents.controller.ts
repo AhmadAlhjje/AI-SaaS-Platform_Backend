@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -18,9 +19,12 @@ import { JwtAuthGuard } from '../../../../shared/guards/jwt-auth.guard';
 import { DeleteDocumentUseCase } from '../../application/use-cases/delete-document.use-case';
 import { GetDocumentUseCase } from '../../application/use-cases/get-document.use-case';
 import { ListDocumentsUseCase } from '../../application/use-cases/list-documents.use-case';
+import { ReprocessDocumentUseCase } from '../../application/use-cases/reprocess-document.use-case';
 import { UploadDocumentUseCase } from '../../application/use-cases/upload-document.use-case';
+import { ListDocumentsQueryDto } from '../dto/list-documents.query.dto';
 import { UploadDocumentDto } from '../dto/upload-document.dto';
 import { DocumentResponse } from '../responses/document.response';
+import { PaginatedDocumentsResponse } from '../responses/paginated-documents.response';
 
 @Controller('documents')
 @UseGuards(JwtAuthGuard, CompanyOwnershipGuard)
@@ -30,6 +34,7 @@ export class DocumentsController {
     private readonly getDocumentUseCase: GetDocumentUseCase,
     private readonly listDocumentsUseCase: ListDocumentsUseCase,
     private readonly deleteDocumentUseCase: DeleteDocumentUseCase,
+    private readonly reprocessDocumentUseCase: ReprocessDocumentUseCase,
   ) {}
 
   @Post()
@@ -52,14 +57,32 @@ export class DocumentsController {
   }
 
   @Get()
-  async list(@CurrentCompany() companyId: string): Promise<DocumentResponse[]> {
-    const documents = await this.listDocumentsUseCase.execute({ companyId });
-    return documents.map((document) => new DocumentResponse(document));
+  async list(
+    @CurrentCompany() companyId: string,
+    @Query() query: ListDocumentsQueryDto,
+  ): Promise<PaginatedDocumentsResponse> {
+    const result = await this.listDocumentsUseCase.execute({
+      companyId,
+      search: query.search,
+      page: query.page,
+      limit: query.limit,
+    });
+
+    return new PaginatedDocumentsResponse(result);
   }
 
   @Get(':id')
   async get(@CurrentCompany() companyId: string, @Param('id') documentId: string): Promise<DocumentResponse> {
     const document = await this.getDocumentUseCase.execute({ documentId, companyId });
+    return new DocumentResponse(document);
+  }
+
+  @Post(':id/reprocess')
+  async reprocess(
+    @CurrentCompany() companyId: string,
+    @Param('id') documentId: string,
+  ): Promise<DocumentResponse> {
+    const document = await this.reprocessDocumentUseCase.execute({ documentId, companyId });
     return new DocumentResponse(document);
   }
 

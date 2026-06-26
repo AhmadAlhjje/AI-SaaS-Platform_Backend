@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Document } from '@prisma/client';
 import { PrismaService } from '../../../../infrastructure/database/prisma.service';
 import { DocumentEntity } from '../../domain/entities/document.entity';
-import { DocumentRepository } from '../../domain/repositories/document.repository';
+import { DocumentRepository, FindAllByCompanyIdOptions } from '../../domain/repositories/document.repository';
 import { DocumentStatus } from '../../domain/value-objects/document-status.value-object';
 
 @Injectable()
@@ -14,17 +14,29 @@ export class PrismaDocumentRepository implements DocumentRepository {
     return record ? this.toDomain(record) : null;
   }
 
-  async findAllByCompanyId(companyId: string): Promise<DocumentEntity[]> {
+  async findAllByCompanyId(companyId: string, options: FindAllByCompanyIdOptions): Promise<DocumentEntity[]> {
     const records = await this.prisma.document.findMany({
-      where: { companyId, deletedAt: null },
+      where: {
+        companyId,
+        deletedAt: null,
+        ...(options.search ? { fileName: { contains: options.search, mode: 'insensitive' } } : {}),
+      },
       orderBy: { createdAt: 'desc' },
+      skip: options.skip,
+      take: options.take,
     });
 
     return records.map((record) => this.toDomain(record));
   }
 
-  async countByCompanyId(companyId: string): Promise<number> {
-    return this.prisma.document.count({ where: { companyId, deletedAt: null } });
+  async countByCompanyId(companyId: string, search?: string): Promise<number> {
+    return this.prisma.document.count({
+      where: {
+        companyId,
+        deletedAt: null,
+        ...(search ? { fileName: { contains: search, mode: 'insensitive' } } : {}),
+      },
+    });
   }
 
   async countByCompanyIdExcludingFileType(companyId: string, excludedFileType: string): Promise<number> {

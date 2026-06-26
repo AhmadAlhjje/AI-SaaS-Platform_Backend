@@ -5,6 +5,16 @@ import { DocumentRepository } from '../../domain/repositories/document.repositor
 
 export interface ListDocumentsInput {
   readonly companyId: string;
+  readonly search?: string;
+  readonly page: number;
+  readonly limit: number;
+}
+
+export interface ListDocumentsResult {
+  readonly items: DocumentEntity[];
+  readonly total: number;
+  readonly page: number;
+  readonly limit: number;
 }
 
 @Injectable()
@@ -13,7 +23,18 @@ export class ListDocumentsUseCase {
     @Inject(REPOSITORY_TOKENS.DOCUMENT_REPOSITORY) private readonly documentRepository: DocumentRepository,
   ) {}
 
-  execute(input: ListDocumentsInput): Promise<DocumentEntity[]> {
-    return this.documentRepository.findAllByCompanyId(input.companyId);
+  async execute(input: ListDocumentsInput): Promise<ListDocumentsResult> {
+    const skip = (input.page - 1) * input.limit;
+
+    const [items, total] = await Promise.all([
+      this.documentRepository.findAllByCompanyId(input.companyId, {
+        search: input.search,
+        skip,
+        take: input.limit,
+      }),
+      this.documentRepository.countByCompanyId(input.companyId, input.search),
+    ]);
+
+    return { items, total, page: input.page, limit: input.limit };
   }
 }

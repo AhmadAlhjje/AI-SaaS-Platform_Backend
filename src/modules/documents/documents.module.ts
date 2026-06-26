@@ -8,6 +8,7 @@ import { EnqueueDocumentProcessingHandler } from './application/event-handlers/e
 import { DeleteDocumentUseCase } from './application/use-cases/delete-document.use-case';
 import { GetDocumentUseCase } from './application/use-cases/get-document.use-case';
 import { ListDocumentsUseCase } from './application/use-cases/list-documents.use-case';
+import { ReprocessDocumentUseCase } from './application/use-cases/reprocess-document.use-case';
 import { UploadDocumentUseCase } from './application/use-cases/upload-document.use-case';
 import { DocumentProcessingFailureHandler } from './infrastructure/jobs/document-processing-failure.handler';
 import { GenerateChunksJob } from './infrastructure/jobs/generate-chunks.job';
@@ -37,6 +38,7 @@ import { DocumentsController } from './presentation/controllers/documents.contro
     GetDocumentUseCase,
     ListDocumentsUseCase,
     DeleteDocumentUseCase,
+    ReprocessDocumentUseCase,
     EnqueueDocumentProcessingHandler,
     DocumentProcessingFailureHandler,
     ParsePdfJob,

@@ -72,6 +72,19 @@ export class DocumentEntity {
     return this.fileType === PDF_FILE_TYPE;
   }
 
+  markProcessing(): DocumentEntity {
+    return new DocumentEntity(
+      this.id,
+      this.companyId,
+      this.fileName,
+      this.fileType,
+      this.fileUrl,
+      this.knowledgeType,
+      DocumentStatus.PROCESSING,
+      this.createdAt,
+    );
+  }
+
   markReady(): DocumentEntity {
     return new DocumentEntity(
       this.id,
