@@ -5,10 +5,13 @@ import {
   PROVIDER_TOKENS,
   REPOSITORY_TOKENS,
 } from '../../shared/constants/tokens.constants';
+import { ChangeEmailUseCase } from './application/use-cases/change-email.use-case';
+import { ChangePasswordUseCase } from './application/use-cases/change-password.use-case';
 import { GetCurrentUserUseCase } from './application/use-cases/get-current-user.use-case';
 import { LoginUserUseCase } from './application/use-cases/login-user.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
+import { UpdateUserProfileUseCase } from './application/use-cases/update-user-profile.use-case';
 import { BcryptPasswordHasherProvider } from './infrastructure/providers/bcrypt-password-hasher.provider';
 import { JwtTokenProvider } from './infrastructure/providers/jwt-token.provider';
 import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository';
@@ -26,6 +29,9 @@ import { AuthController } from './presentation/controllers/auth.controller';
     LoginUserUseCase,
     RefreshTokenUseCase,
     GetCurrentUserUseCase,
+    UpdateUserProfileUseCase,
+    ChangeEmailUseCase,
+    ChangePasswordUseCase,
     JwtStrategy,
     {
       provide: REPOSITORY_TOKENS.USER_REPOSITORY,

@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Req,
   Res,
@@ -27,12 +28,18 @@ import {
   AuthTokens,
   LoginUserUseCase,
 } from '../../application/use-cases/login-user.use-case';
+import { ChangeEmailUseCase } from '../../application/use-cases/change-email.use-case';
+import { ChangePasswordUseCase } from '../../application/use-cases/change-password.use-case';
 import { GetCurrentUserUseCase } from '../../application/use-cases/get-current-user.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.use-case';
 import { RegisterUserUseCase } from '../../application/use-cases/register-user.use-case';
+import { UpdateUserProfileUseCase } from '../../application/use-cases/update-user-profile.use-case';
+import { ChangeEmailDto } from '../dto/change-email.dto';
+import { ChangePasswordDto } from '../dto/change-password.dto';
 import { LoginDto } from '../dto/login.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { RegisterDto } from '../dto/register.dto';
+import { UpdateProfileDto } from '../dto/update-profile.dto';
 import { AuthTokenResponse } from '../responses/auth-token.response';
 import { CurrentUserResponse } from '../responses/current-user.response';
 import { RegisteredUserResponse } from '../responses/registered-user.response';
@@ -44,6 +51,9 @@ export class AuthController {
     private readonly loginUserUseCase: LoginUserUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
     private readonly getCurrentUserUseCase: GetCurrentUserUseCase,
+    private readonly updateUserProfileUseCase: UpdateUserProfileUseCase,
+    private readonly changeEmailUseCase: ChangeEmailUseCase,
+    private readonly changePasswordUseCase: ChangePasswordUseCase,
   ) {}
 
   @Post('register')
@@ -98,6 +108,41 @@ export class AuthController {
       userId: user.userId,
     });
     return new CurrentUserResponse(currentUser);
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: UpdateProfileDto,
+  ): Promise<CurrentUserResponse> {
+    const updatedUser = await this.updateUserProfileUseCase.execute({ userId: user.userId, name: dto.name });
+    return new CurrentUserResponse(updatedUser);
+  }
+
+  @Patch('me/email')
+  @UseGuards(JwtAuthGuard)
+  async changeEmail(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: ChangeEmailDto,
+  ): Promise<CurrentUserResponse> {
+    const updatedUser = await this.changeEmailUseCase.execute({
+      userId: user.userId,
+      newEmail: dto.email,
+      currentPassword: dto.currentPassword,
+    });
+    return new CurrentUserResponse(updatedUser);
+  }
+
+  @Patch('me/password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard)
+  async changePassword(@CurrentUser() user: AuthenticatedUser, @Body() dto: ChangePasswordDto): Promise<void> {
+    await this.changePasswordUseCase.execute({
+      userId: user.userId,
+      currentPassword: dto.currentPassword,
+      newPassword: dto.newPassword,
+    });
   }
 
   private setAuthCookies(res: Response, tokens: AuthTokens): void {

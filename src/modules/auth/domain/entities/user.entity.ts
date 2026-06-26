@@ -48,4 +48,15 @@ export class UserEntity {
       props.createdAt,
     );
   }
+
+  update(changes: { name?: string; email?: string; passwordHash?: string }): UserEntity {
+    return new UserEntity(
+      this.id,
+      changes.name ?? this.name,
+      changes.email === undefined ? this.email : new Email(changes.email).toString(),
+      changes.passwordHash ?? this.passwordHash,
+      this.companyId,
+      this.createdAt,
+    );
+  }
 }

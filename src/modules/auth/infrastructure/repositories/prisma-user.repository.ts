@@ -47,6 +47,20 @@ export class PrismaUserRepository implements UserRepository {
     });
   }
 
+  async update(user: UserEntity): Promise<UserEntity> {
+    const record = await this.prisma.user.update({
+      where: { id: user.id! },
+      data: {
+        name: user.name,
+        email: user.email,
+        passwordHash: user.passwordHash,
+      },
+      include: { company: { select: { id: true } } },
+    });
+
+    return this.toDomain(record);
+  }
+
   private toDomain(record: UserWithCompany): UserEntity {
     return UserEntity.reconstitute({
       id: record.id,
