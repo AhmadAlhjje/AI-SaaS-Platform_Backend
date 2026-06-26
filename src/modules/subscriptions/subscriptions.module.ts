@@ -3,12 +3,16 @@ import { REPOSITORY_TOKENS } from '../../shared/constants/tokens.constants';
 import { ProvisionDefaultSubscriptionHandler } from './application/event-handlers/provision-default-subscription.handler';
 import { CheckUsageLimitsUseCase } from './application/use-cases/check-usage-limits.use-case';
 import { GetActiveSubscriptionUseCase } from './application/use-cases/get-active-subscription.use-case';
+import { GetMySubscriptionUseCase } from './application/use-cases/get-my-subscription.use-case';
 import { PrismaPlanRepository } from './infrastructure/repositories/prisma-plan.repository';
 import { PrismaSubscriptionRepository } from './infrastructure/repositories/prisma-subscription.repository';
+import { SubscriptionsController } from './presentation/controllers/subscriptions.controller';
 
 @Module({
+  controllers: [SubscriptionsController],
   providers: [
     GetActiveSubscriptionUseCase,
+    GetMySubscriptionUseCase,
     CheckUsageLimitsUseCase,
     ProvisionDefaultSubscriptionHandler,
     { provide: REPOSITORY_TOKENS.PLAN_REPOSITORY, useClass: PrismaPlanRepository },
