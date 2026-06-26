@@ -1,4 +1,4 @@
-import { Email } from '../value-objects/email.value-object';
+import { Email } from "../value-objects/email.value-object";
 
 interface ReconstituteProps {
   readonly id: string;
@@ -23,11 +23,29 @@ export class UserEntity {
     public readonly createdAt: Date,
   ) {}
 
-  static register(name: string, email: string, passwordHash: string): UserEntity {
-    return new UserEntity(null, name, new Email(email).toString(), passwordHash, null, new Date());
+  static register(
+    name: string,
+    email: string,
+    passwordHash: string,
+  ): UserEntity {
+    return new UserEntity(
+      null,
+      name,
+      new Email(email).toString(),
+      passwordHash,
+      null,
+      new Date(),
+    );
   }
 
   static reconstitute(props: ReconstituteProps): UserEntity {
-    return new UserEntity(props.id, props.name, props.email, props.passwordHash, props.companyId, props.createdAt);
+    return new UserEntity(
+      props.id,
+      props.name,
+      props.email,
+      props.passwordHash,
+      props.companyId,
+      props.createdAt,
+    );
   }
 }

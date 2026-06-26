@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
-import { PrismaService } from '../../../../infrastructure/database/prisma.service';
-import { UserEntity } from '../../domain/entities/user.entity';
-import { UserRepository } from '../../domain/repositories/user.repository';
+import { Injectable } from "@nestjs/common";
+import { User } from "@prisma/client";
+import { PrismaService } from "../../../../infrastructure/database/prisma.service";
+import { UserEntity } from "../../domain/entities/user.entity";
+import { UserRepository } from "../../domain/repositories/user.repository";
 
 type UserWithCompany = User & { company: { id: string } | null };
 

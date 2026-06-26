@@ -1,7 +1,11 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { PROVIDER_TOKENS, REPOSITORY_TOKENS } from '../../shared/constants/tokens.constants';
+import {
+  PROVIDER_TOKENS,
+  REPOSITORY_TOKENS,
+} from '../../shared/constants/tokens.constants';
+import { GetCurrentUserUseCase } from './application/use-cases/get-current-user.use-case';
 import { LoginUserUseCase } from './application/use-cases/login-user.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
@@ -12,15 +16,25 @@ import { JwtStrategy } from './infrastructure/strategies/jwt.strategy';
 import { AuthController } from './presentation/controllers/auth.controller';
 
 @Module({
-  imports: [PassportModule.register({ defaultStrategy: 'jwt' }), JwtModule.register({})],
+  imports: [
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({}),
+  ],
   controllers: [AuthController],
   providers: [
     RegisterUserUseCase,
     LoginUserUseCase,
     RefreshTokenUseCase,
+    GetCurrentUserUseCase,
     JwtStrategy,
-    { provide: REPOSITORY_TOKENS.USER_REPOSITORY, useClass: PrismaUserRepository },
-    { provide: PROVIDER_TOKENS.PASSWORD_HASHER, useClass: BcryptPasswordHasherProvider },
+    {
+      provide: REPOSITORY_TOKENS.USER_REPOSITORY,
+      useClass: PrismaUserRepository,
+    },
+    {
+      provide: PROVIDER_TOKENS.PASSWORD_HASHER,
+      useClass: BcryptPasswordHasherProvider,
+    },
     { provide: PROVIDER_TOKENS.TOKEN_PROVIDER, useClass: JwtTokenProvider },
   ],
 })

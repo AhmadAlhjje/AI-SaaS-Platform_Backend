@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import cookieParser from 'cookie-parser';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DomainErrorFilter } from './shared/exceptions/domain-error.filter';
@@ -14,11 +15,20 @@ async function bootstrap(): Promise<void> {
   const logger = app.get(AppLoggerService);
   app.useLogger(logger);
 
+  app.use(cookieParser());
+  app.enableCors({ origin: process.env.FRONTEND_URL, credentials: true });
+
   app.useGlobalPipes(new AppValidationPipe());
   // Nest internally reverses this array before matching, so the catch-all
   // must be passed first for the more specific DomainErrorFilter to win.
-  app.useGlobalFilters(new HttpExceptionFilter(logger), new DomainErrorFilter(logger));
-  app.useGlobalInterceptors(new LoggingInterceptor(logger), new ResponseInterceptor());
+  app.useGlobalFilters(
+    new HttpExceptionFilter(logger),
+    new DomainErrorFilter(logger),
+  );
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(logger),
+    new ResponseInterceptor(),
+  );
 
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
