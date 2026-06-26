@@ -19,6 +19,11 @@ export class PrismaPlanRepository implements PlanRepository {
     return record ? this.toDomain(record) : null;
   }
 
+  async findAll(): Promise<PlanEntity[]> {
+    const records = await this.prisma.plan.findMany({ orderBy: { price: 'asc' } });
+    return records.map((record) => this.toDomain(record));
+  }
+
   private toDomain(record: Plan): PlanEntity {
     return PlanEntity.reconstitute({
       id: record.id,

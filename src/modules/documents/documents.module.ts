@@ -6,6 +6,7 @@ import { QUEUE_NAMES } from '../../shared/constants/queue.constants';
 import { PROVIDER_TOKENS, REPOSITORY_TOKENS } from '../../shared/constants/tokens.constants';
 import { EnqueueDocumentProcessingHandler } from './application/event-handlers/enqueue-document-processing.handler';
 import { DeleteDocumentUseCase } from './application/use-cases/delete-document.use-case';
+import { GetDocumentUsageUseCase } from './application/use-cases/get-document-usage.use-case';
 import { GetDocumentUseCase } from './application/use-cases/get-document.use-case';
 import { ListDocumentsUseCase } from './application/use-cases/list-documents.use-case';
 import { ReprocessDocumentUseCase } from './application/use-cases/reprocess-document.use-case';
@@ -39,6 +40,7 @@ import { DocumentsController } from './presentation/controllers/documents.contro
     ListDocumentsUseCase,
     DeleteDocumentUseCase,
     ReprocessDocumentUseCase,
+    GetDocumentUsageUseCase,
     EnqueueDocumentProcessingHandler,
     DocumentProcessingFailureHandler,
     ParsePdfJob,
@@ -50,5 +52,9 @@ import { DocumentsController } from './presentation/controllers/documents.contro
     { provide: PROVIDER_TOKENS.STORAGE_PROVIDER, useClass: S3StorageProvider },
     { provide: PROVIDER_TOKENS.VECTOR_INDEXER, useClass: QdrantIndexerProvider },
   ],
+  // Exported so the Usage module can report current usage against plan
+  // limits as a public application service (ROLE.md §7) without reaching
+  // into this module's repository directly.
+  exports: [GetDocumentUsageUseCase],
 })
 export class DocumentsModule {}

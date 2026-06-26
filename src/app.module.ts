@@ -12,6 +12,7 @@ import { DataTablesModule } from './modules/data-tables/data-tables.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { UsageModule } from './modules/usage/usage.module';
 import { EventBusModule } from './shared/events/event-bus.module';
 import { LoggerModule } from './shared/logger/logger.module';
 
@@ -32,6 +33,7 @@ import { LoggerModule } from './shared/logger/logger.module';
     AiConfigurationModule,
     AiModule,
     SettingsModule,
+    UsageModule,
   ],
 })
 export class AppModule {}

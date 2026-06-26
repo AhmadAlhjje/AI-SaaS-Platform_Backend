@@ -36,6 +36,13 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
     return this.toDomain(record);
   }
 
+  async cancel(id: string): Promise<void> {
+    await this.prisma.subscription.update({
+      where: { id },
+      data: { status: SubscriptionStatus.CANCELLED, endDate: new Date() },
+    });
+  }
+
   private toDomain(record: Subscription): SubscriptionEntity {
     return SubscriptionEntity.reconstitute({
       id: record.id,
