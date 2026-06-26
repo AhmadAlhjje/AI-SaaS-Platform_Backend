@@ -17,12 +17,11 @@ export interface QueryPlan {
  * Translates a natural-language question into a structured QueryPlan —
  * never raw SQL text. ExecuteSqlQueryUseCase only ever turns a QueryPlan
  * into parameterized Prisma JSON-path filters (ROLE.md §12: whitelisted
- * table names, never string-built SQL). Implemented today by a local
- * heuristic (HeuristicSqlQueryGeneratorProvider); swapping to a real LLM
- * later just means implementing this interface against ai-service, the
- * same way AiProvider/EmbeddingsProvider do in the ai module — no use case
- * changes.
+ * table names, never string-built SQL). Implemented by
+ * HttpSqlQueryGeneratorProvider, which calls ai-service's /sql-agent/query
+ * (an LLM-based planner) — `model` lets each company use its own configured
+ * model, same as AiProvider/EmbeddingsProvider.
  */
 export interface SqlQueryGenerator {
-  generate(question: string, columns: readonly ColumnSchema[]): Promise<QueryPlan>;
+  generate(question: string, columns: readonly ColumnSchema[], model: string): Promise<QueryPlan>;
 }

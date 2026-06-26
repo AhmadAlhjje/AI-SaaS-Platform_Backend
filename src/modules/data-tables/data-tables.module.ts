@@ -2,6 +2,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { QUEUE_NAMES } from '../../shared/constants/queue.constants';
 import { PROVIDER_TOKENS, REPOSITORY_TOKENS } from '../../shared/constants/tokens.constants';
+import { AiConfigurationModule } from '../ai-configuration/ai-configuration.module';
 import { EnqueueDataImportHandler } from './application/event-handlers/enqueue-data-import.handler';
 import { ExecuteSqlQueryUseCase } from './application/use-cases/execute-sql-query.use-case';
 import { GenerateSqlQueryUseCase } from './application/use-cases/generate-sql-query.use-case';
@@ -11,14 +12,14 @@ import { ListDataTablesUseCase } from './application/use-cases/list-data-tables.
 import { ImportDataTableJob } from './infrastructure/jobs/import-data-table.job';
 import { CsvParserProvider } from './infrastructure/providers/csv-parser.provider';
 import { ExcelParserProvider } from './infrastructure/providers/excel-parser.provider';
-import { HeuristicSqlQueryGeneratorProvider } from './infrastructure/providers/heuristic-sql-query-generator.provider';
+import { HttpSqlQueryGeneratorProvider } from './infrastructure/providers/http-sql-query-generator.provider';
 import { S3DataTableDownloaderProvider } from './infrastructure/providers/s3-data-table-downloader.provider';
 import { PrismaDataTableRowRepository } from './infrastructure/repositories/prisma-data-table-row.repository';
 import { PrismaDataTableRepository } from './infrastructure/repositories/prisma-data-table.repository';
 import { DataTablesController } from './presentation/controllers/data-tables.controller';
 
 @Module({
-  imports: [BullModule.registerQueue({ name: QUEUE_NAMES.IMPORT_DATA_TABLE })],
+  imports: [AiConfigurationModule, BullModule.registerQueue({ name: QUEUE_NAMES.IMPORT_DATA_TABLE })],
   controllers: [DataTablesController],
   providers: [
     ImportDataTableUseCase,
@@ -33,7 +34,11 @@ import { DataTablesController } from './presentation/controllers/data-tables.con
     { provide: PROVIDER_TOKENS.CSV_PARSER, useClass: CsvParserProvider },
     { provide: PROVIDER_TOKENS.EXCEL_PARSER, useClass: ExcelParserProvider },
     { provide: PROVIDER_TOKENS.DATA_TABLE_FILE_DOWNLOADER, useClass: S3DataTableDownloaderProvider },
-    { provide: PROVIDER_TOKENS.SQL_QUERY_GENERATOR, useClass: HeuristicSqlQueryGeneratorProvider },
+    { provide: PROVIDER_TOKENS.SQL_QUERY_GENERATOR, useClass: HttpSqlQueryGeneratorProvider },
   ],
+  // Exported so the AI module's RunSqlAgentQueryUseCase can run the SQL_AGENT
+  // route as a public application service (ROLE.md §7) instead of reaching
+  // into this module's repositories/infrastructure directly.
+  exports: [ListDataTablesUseCase, GenerateSqlQueryUseCase, ExecuteSqlQueryUseCase],
 })
 export class DataTablesModule {}
