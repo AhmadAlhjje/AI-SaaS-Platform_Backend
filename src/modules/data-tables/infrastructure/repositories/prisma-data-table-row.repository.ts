@@ -3,7 +3,7 @@ import { DataTableRow, Prisma } from '@prisma/client';
 import { PrismaService } from '../../../../infrastructure/database/prisma.service';
 import { DataTableRowEntity } from '../../domain/entities/data-table-row.entity';
 import { QueryFilter, QueryPlan } from '../../domain/interfaces/sql-query-generator.interface';
-import { DataTableRowRepository } from '../../domain/repositories/data-table-row.repository';
+import { DataTableRowRepository, RowQueryOptions } from '../../domain/repositories/data-table-row.repository';
 
 @Injectable()
 export class PrismaDataTableRowRepository implements DataTableRowRepository {
@@ -24,6 +24,38 @@ export class PrismaDataTableRowRepository implements DataTableRowRepository {
 
   async countByDataTableId(dataTableId: string): Promise<number> {
     return this.prisma.dataTableRow.count({ where: { dataTableId } });
+  }
+
+  async findPaginated(dataTableId: string, options: RowQueryOptions): Promise<DataTableRowEntity[]> {
+    const records = await this.prisma.dataTableRow.findMany({
+      where: this.toFilteredWhere(dataTableId, options),
+      orderBy: { rowIndex: 'asc' },
+      skip: options.skip,
+      take: options.take,
+    });
+
+    return records.map((record) => this.toDomain(record));
+  }
+
+  async countFiltered(dataTableId: string, options: Omit<RowQueryOptions, 'skip' | 'take'>): Promise<number> {
+    return this.prisma.dataTableRow.count({ where: this.toFilteredWhere(dataTableId, options) });
+  }
+
+  private toFilteredWhere(
+    dataTableId: string,
+    options: Omit<RowQueryOptions, 'skip' | 'take'>,
+  ): Prisma.DataTableRowWhereInput {
+    return {
+      dataTableId,
+      AND: options.filters.map((filter) => this.toJsonFilter(filter)),
+      ...(options.search && options.searchableColumns.length > 0
+        ? { OR: options.searchableColumns.map((column) => this.toSearchFilter(column, options.search!)) }
+        : {}),
+    };
+  }
+
+  private toSearchFilter(column: string, search: string): Prisma.DataTableRowWhereInput {
+    return { rowData: { path: [column], string_contains: search } };
   }
 
   private toDomain(record: DataTableRow): DataTableRowEntity {

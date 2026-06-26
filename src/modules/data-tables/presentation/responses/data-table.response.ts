@@ -15,3 +15,12 @@ export class DataTableResponse {
     this.createdAt = dataTable.createdAt;
   }
 }
+
+export class DataTableDetailResponse extends DataTableResponse {
+  readonly rowCount: number;
+
+  constructor(dataTable: DataTableEntity, rowCount: number) {
+    super(dataTable);
+    this.rowCount = rowCount;
+  }
+}

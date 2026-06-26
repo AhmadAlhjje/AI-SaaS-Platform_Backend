@@ -6,6 +6,7 @@ import { AiConfigurationModule } from '../ai-configuration/ai-configuration.modu
 import { EnqueueDataImportHandler } from './application/event-handlers/enqueue-data-import.handler';
 import { ExecuteSqlQueryUseCase } from './application/use-cases/execute-sql-query.use-case';
 import { GenerateSqlQueryUseCase } from './application/use-cases/generate-sql-query.use-case';
+import { GetDataTableRowsUseCase } from './application/use-cases/get-data-table-rows.use-case';
 import { GetDataTableSchemaUseCase } from './application/use-cases/get-data-table-schema.use-case';
 import { ImportDataTableUseCase } from './application/use-cases/import-data-table.use-case';
 import { ListDataTablesUseCase } from './application/use-cases/list-data-tables.use-case';
@@ -25,6 +26,7 @@ import { DataTablesController } from './presentation/controllers/data-tables.con
     ImportDataTableUseCase,
     ListDataTablesUseCase,
     GetDataTableSchemaUseCase,
+    GetDataTableRowsUseCase,
     GenerateSqlQueryUseCase,
     ExecuteSqlQueryUseCase,
     EnqueueDataImportHandler,
