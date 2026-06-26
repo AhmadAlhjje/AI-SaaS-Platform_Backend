@@ -33,6 +33,11 @@ export class PrismaConversationRepository implements ConversationRepository {
     return this.toDomain(record);
   }
 
+  async updateTitle(id: string, title: string): Promise<ConversationEntity> {
+    const record = await this.prisma.conversation.update({ where: { id }, data: { title } });
+    return this.toDomain(record);
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.conversation.delete({ where: { id } });
   }

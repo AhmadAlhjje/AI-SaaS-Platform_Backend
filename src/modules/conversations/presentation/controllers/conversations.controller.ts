@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CurrentCompany } from '../../../../shared/decorators/current-company.decorator';
 import { CompanyOwnershipGuard } from '../../../../shared/guards/company-ownership.guard';
 import { JwtAuthGuard } from '../../../../shared/guards/jwt-auth.guard';
@@ -7,9 +7,11 @@ import { DeleteConversationUseCase } from '../../application/use-cases/delete-co
 import { GetConversationHistoryUseCase } from '../../application/use-cases/get-conversation-history.use-case';
 import { ListConversationsUseCase } from '../../application/use-cases/list-conversations.use-case';
 import { RegenerateLastResponseUseCase } from '../../application/use-cases/regenerate-last-response.use-case';
+import { RenameConversationUseCase } from '../../application/use-cases/rename-conversation.use-case';
 import { SendMessageUseCase } from '../../application/use-cases/send-message.use-case';
 import { SenderType } from '../../domain/entities/message.entity';
 import { CreateConversationDto } from '../dto/create-conversation.dto';
+import { RenameConversationDto } from '../dto/rename-conversation.dto';
 import { SendMessageDto } from '../dto/send-message.dto';
 import { ConversationResponse } from '../responses/conversation.response';
 import { MessageResponse } from '../responses/message.response';
@@ -25,6 +27,7 @@ export class ConversationsController {
     private readonly getConversationHistoryUseCase: GetConversationHistoryUseCase,
     private readonly deleteConversationUseCase: DeleteConversationUseCase,
     private readonly regenerateLastResponseUseCase: RegenerateLastResponseUseCase,
+    private readonly renameConversationUseCase: RenameConversationUseCase,
   ) {}
 
   @Post()
@@ -76,6 +79,20 @@ export class ConversationsController {
   ): Promise<MessageResponse> {
     const aiMessage = await this.regenerateLastResponseUseCase.execute({ companyId, conversationId });
     return new MessageResponse(aiMessage);
+  }
+
+  @Patch(':id')
+  async rename(
+    @CurrentCompany() companyId: string,
+    @Param('id') conversationId: string,
+    @Body() dto: RenameConversationDto,
+  ): Promise<ConversationResponse> {
+    const conversation = await this.renameConversationUseCase.execute({
+      conversationId,
+      companyId,
+      title: dto.title,
+    });
+    return new ConversationResponse(conversation);
   }
 
   @Delete(':id')
