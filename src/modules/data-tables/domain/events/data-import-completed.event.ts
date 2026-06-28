@@ -8,6 +8,7 @@ export class DataImportCompletedEvent implements DomainEvent {
   constructor(
     public readonly dataTableId: string,
     public readonly companyId: string,
+    public readonly documentId: string,
     public readonly rowCount: number,
   ) {}
 }

@@ -5,6 +5,7 @@ import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 import { QUEUE_NAMES } from '../../shared/constants/queue.constants';
 import { PROVIDER_TOKENS, REPOSITORY_TOKENS } from '../../shared/constants/tokens.constants';
 import { EnqueueDocumentProcessingHandler } from './application/event-handlers/enqueue-document-processing.handler';
+import { SyncDataImportStatusHandler } from './application/event-handlers/sync-data-import-status.handler';
 import { DeleteDocumentUseCase } from './application/use-cases/delete-document.use-case';
 import { GetDocumentUsageUseCase } from './application/use-cases/get-document-usage.use-case';
 import { GetDocumentUseCase } from './application/use-cases/get-document.use-case';
@@ -42,6 +43,7 @@ import { DocumentsController } from './presentation/controllers/documents.contro
     ReprocessDocumentUseCase,
     GetDocumentUsageUseCase,
     EnqueueDocumentProcessingHandler,
+    SyncDataImportStatusHandler,
     DocumentProcessingFailureHandler,
     ParsePdfJob,
     GenerateChunksJob,

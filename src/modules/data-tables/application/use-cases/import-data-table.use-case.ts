@@ -46,7 +46,7 @@ export class ImportDataTableUseCase {
     );
     this.eventBus.publish(
       DATA_IMPORT_COMPLETED_EVENT,
-      new DataImportCompletedEvent(createdDataTable.id!, createdDataTable.companyId, parsed.rows.length),
+      new DataImportCompletedEvent(createdDataTable.id!, createdDataTable.companyId, input.documentId, parsed.rows.length),
     );
 
     return createdDataTable;
